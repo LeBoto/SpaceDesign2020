@@ -1,6 +1,6 @@
 import numpy as np
 
 
-def drift(v, diam, c_d, rho):
+def f_drift(v, v_wind, diam, rho):
     area = np.pi * diam**2.0 / 4.0
-    return c_d*0.5*rho*v**2*area
+    return 0.5*rho*(v_wind - v)**2*area
