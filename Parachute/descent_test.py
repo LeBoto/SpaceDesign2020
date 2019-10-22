@@ -33,7 +33,7 @@ v_x = 0.
 
 rho = 0.0023769  # slug/ft^3
 g = 32.17405  # ft/s^2
-v_wind = 60.0  # ft/s
+v_wind = 10.0  # ft/s
 
 # force balance
 f_g = mass*g
@@ -55,13 +55,19 @@ def f(state):
 
 s = np.array([0, 0, 0, 0])
 res = []
-for i in range(150):
+f_bal = []
+for i in range(600):
     res.append(s)
     s = rk4(s, f, 0.1)
-res.append(s)
+    force = np.array([mass*g - 0.5*rho*A_top*c_D_d*s[1]**2,
+                      0.5 * rho * A_side * (v_wind - s[0]) ** 2 - c_D_s * 0.5 * rho * A_side * (v_wind - s[0]) ** 2])
+    f_bal.append(force)
+f_bal = np.asarray(f_bal)
 res = np.asarray(res)
 plt.figure(1)
 plt.plot(res[:, 0], 40 - res[:, 1])
 plt.figure(2)
 plt.plot(res[:, 2], 40 - res[:, 3])
+plt.figure(3)
+plt.plot(f_bal[:, 0], f_bal[:, 1])
 # plt.xlim(0, 40)
