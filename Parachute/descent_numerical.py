@@ -2,23 +2,8 @@ import numpy as np
 import sympy as sy
 import matplotlib.pyplot as plt
 from velocity import velocity
-
-
-def area(d):
-    return np.pi*(d/2.0)**2
-
-
-def rk4(yn, f, h):
-    shp = yn.shape
-    yn = yn.flatten()
-    k1 = (f(yn) * h).flatten()
-    y = yn + 0.5 * k1
-    k2 = (f(y) * h).flatten()
-    y = yn + 0.5 * k2
-    k3 = (f(y) * h).flatten()
-    y = yn + k3
-    k4 = (f(y) * h).flatten()
-    return (yn + (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6.0).reshape(shp)
+from sim import sim
+from tools import area
 
 r_x, r_y, v_x, v_y = sy.symbols("r_x, r_y, v_x, v_y")
 v_wind = 22.0
@@ -44,18 +29,24 @@ l_equ = sy.lambdify([var], equs)
 dt = 0.01
 t_f = 90.0
 y = np.array([0., 700.0, 0., -92.0])
-results = []
-for i in range(int(t_f/dt)):
-    y = rk4(y, l_equ, dt)
-    results.append(y)
+breakc = lambda state: state[1] > 0
 
-results = np.asarray(results)
+res, time = sim(y, dt, l_equ, breakc)
 
 plt.figure(1)
-plt.plot(results[:, 0], results[:, 1])
+plt.plot(res[:, 0], res[:, 1])
+plt.title("2D Drift")
+plt.xlabel("x (ft)")
+plt.ylabel("y (ft)")
 plt.figure(2)
-plt.plot(np.arange(int(t_f/dt))*dt, results[:, 2])
+plt.plot(time, res[:, 2])
+plt.title("Drift Velocity")
+plt.xlabel("time (s)")
+plt.ylabel("velocity (ft/s")
 plt.figure(3)
-plt.plot(np.arange(int(t_f/dt))*dt, results[:, 3])
+plt.plot(time, res[:, 3])
+plt.title("Descent Velocity")
+plt.xlabel("time (s)")
+plt.ylabel("velocity (ft/s")
 vel = velocity(diameter, c_D, rho, m, g)
-print("Test velocity: {} ft/s\nAnalytical Velocity: {} ft/s".format(results[-1, 3], -vel))
+print("Test velocity: {} ft/s\nAnalytical Velocity: {} ft/s".format(res[-1, 3], -vel))
