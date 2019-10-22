@@ -1,4 +1,3 @@
-
 import sympy as sy
 
 
@@ -14,7 +13,7 @@ def descent_equ(mass, area, c_d_fall, c_d_drift, v_w):
 
     d_r_x = v_x
     d_r_y = v_y
-    d_v_x = c_d*0.5 * rho * (A_top /2.0) * (v_wind - v_x) ** 2
+    d_v_x = c_d * 0.5 * rho * (A_top / 2.0) * (v_wind ** 2 - v_x ** 2)
     d_v_y = 0.5 * rho * A_top * c_D * v_y ** 2 - m * g
 
     var = [r_x, r_y, v_x, v_y]

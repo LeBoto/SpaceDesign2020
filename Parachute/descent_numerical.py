@@ -4,6 +4,7 @@ from velocity import velocity
 from sim import sim
 from descent_equ import descent_equ
 from tools import area
+from kinetic_energy import kinetic_energy
 
 # sim setup drogue
 mass = 1.61621
@@ -57,4 +58,5 @@ print("____________________________________")
 print("Descent time: {0:.2f} secs".format(time[-1]))
 print("Stable velocity drogue: {0:.2f} ft/s".format(res_d[-1, 3]))
 print("Stable velocity main: {0:.2f} ft/s".format(res_m[-1, 3]))
+print("Kinetic energy: {0:.2f}".format(kinetic_energy(mass, np.linalg.norm(res_full[-1, 2:3]))))
 print("____________________________________")
