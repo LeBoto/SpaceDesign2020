@@ -3,22 +3,25 @@ import matplotlib.pyplot as plt
 from velocity import velocity
 from sim import sim
 from descent_equ import descent_equ
+from tools import area
 
 # sim setup drogue
 mass = 1.61621
-diam = 2.0  # ft
+diam = 3.0  # ft
 cd_para = 1.5
-cd_drift = 0.4
+cd_drift = 0.75
 v_wind = 15.0  # ft/s
-equ_drogue = descent_equ(mass, diam, cd_para, cd_drift, v_wind)
+sa = area(diam)
+equ_drogue = descent_equ(mass, sa, cd_para, cd_drift, v_wind)
 
 # sim setup Main
 mass = 1.61621
-diam = 10.0
+diam = 8.0
 cd_para = 2.59
-cd_drift = 0.45
+cd_drift = 0.75
 v_wind = 10.0  # ft/s
-equ_main = descent_equ(mass, diam, cd_para, cd_drift, v_wind)
+sa = area(diam)
+equ_main = descent_equ(mass, sa, cd_para, cd_drift, v_wind)
 
 dt = 0.01
 t_f = 0.0
