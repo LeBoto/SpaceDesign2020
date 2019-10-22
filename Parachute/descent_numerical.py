@@ -28,10 +28,11 @@ rho = 0.0023769  # slug/ft^3
 diameter = 10.0  # ft
 A_top = area(diameter)  # ft^2
 c_D = 2.59
+c_d = 0.45
 
 d_r_x = v_x
 d_r_y = v_y
-d_v_x = 0.5 * rho * (A_top/2.0) * (v_wind - v_x) ** 2
+d_v_x = (1 + c_d)*0.5 * rho * (A_top/2.0) * (v_wind - v_x) ** 2
 d_v_y = 0.5 * rho * A_top * c_D * v_y ** 2 - m * g
 
 var = [r_x, r_y, v_x, v_y]
@@ -53,8 +54,8 @@ results = np.asarray(results)
 plt.figure(1)
 plt.plot(results[:, 0], results[:, 1])
 plt.figure(2)
-plt.plot(np.arange(int(t_f/dt)), results[:, 2])
+plt.plot(np.arange(int(t_f/dt))*dt, results[:, 2])
 plt.figure(3)
-plt.plot(np.arange(int(t_f/dt)), results[:, 3])
+plt.plot(np.arange(int(t_f/dt))*dt, results[:, 3])
 vel = velocity(diameter, c_D, rho, m, g)
 print("Test velocity: {} ft/s\nAnalytical Velocity: {} ft/s".format(results[-1, 3], -vel))
