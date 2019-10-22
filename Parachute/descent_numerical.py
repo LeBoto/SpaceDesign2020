@@ -3,28 +3,16 @@ import sympy as sy
 import matplotlib.pyplot as plt
 from velocity import velocity
 from sim import sim
-from tools import area
+from descent_equ import descent_equ
 
-r_x, r_y, v_x, v_y = sy.symbols("r_x, r_y, v_x, v_y")
-v_wind = 22.0
-g = 32.17405  # ft/s^2
-m = 0.0874152 + 1.61621  # slugs
-rho = 0.0023769  # slug/ft^3
-diameter = 10.0  # ft
-A_top = area(diameter)  # ft^2
-c_D = 2.59
-c_d = 0.45
+# sim setup
 
-d_r_x = v_x
-d_r_y = v_y
-d_v_x = (1 + c_d)*0.5 * rho * (A_top/2.0) * (v_wind - v_x) ** 2
-d_v_y = 0.5 * rho * A_top * c_D * v_y ** 2 - m * g
-
-var = [r_x, r_y, v_x, v_y]
-equs = sy.Matrix([d_r_x, d_r_y, d_v_x, d_v_y])
-
-
-l_equ = sy.lambdify([var], equs)
+mass = 0.0874152 + 1.61621
+diam = 10.0
+cd_para = 2.59
+cd_drift = 0.45
+v_wind = 10.0 # ft/s
+l_equ = descent_equ(mass, diam, cd_para, cd_drift, v_wind)
 
 dt = 0.01
 t_f = 90.0
@@ -48,5 +36,8 @@ plt.plot(time, res[:, 3])
 plt.title("Descent Velocity")
 plt.xlabel("time (s)")
 plt.ylabel("velocity (ft/s")
-vel = velocity(diameter, c_D, rho, m, g)
+
+g = 32.17405  # ft/s^2
+rho = 0.0023769  # slug/ft^3
+vel = velocity(diam, cd_para, rho, mass, g)
 print("Test velocity: {} ft/s\nAnalytical Velocity: {} ft/s".format(res[-1, 3], -vel))
