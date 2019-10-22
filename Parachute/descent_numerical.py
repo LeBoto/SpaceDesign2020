@@ -5,39 +5,50 @@ from velocity import velocity
 from sim import sim
 from descent_equ import descent_equ
 
-# sim setup
+# sim setup drogue
+mass = 1.61621
+diam = 2.0  # ft
+cd_para = 1.5
+cd_drift = 0.4
+v_wind = 15.0  # ft/s
+equ_drogue = descent_equ(mass, diam, cd_para, cd_drift, v_wind)
 
-mass = 0.0874152 + 1.61621
+# sim setup Main
+mass = 1.61621
 diam = 10.0
 cd_para = 2.59
 cd_drift = 0.45
-v_wind = 10.0 # ft/s
-l_equ = descent_equ(mass, diam, cd_para, cd_drift, v_wind)
+v_wind = 10.0  # ft/s
+equ_main = descent_equ(mass, diam, cd_para, cd_drift, v_wind)
 
 dt = 0.01
-t_f = 90.0
-y = np.array([0., 700.0, 0., -92.0])
-breakc = lambda state: state[1] > 0
+t_f = 0.0
+y = np.array([0., 4000.0, 0., 0.0])
+breakd = lambda state: state[1] > 700
+breakm = lambda state: state[1] > 0
+res_d, time = sim(y, dt, equ_drogue, breakd)
+y = res_d[-1, :]
+res_m, time = sim(y, dt, equ_main, breakm)
 
-res, time = sim(y, dt, l_equ, breakc)
-
+res_full = np.append(res_d, res_m, axis=0)
 plt.figure(1)
-plt.plot(res[:, 0], res[:, 1])
+plt.plot(res_full[:, 0], res_full[:, 1])
 plt.title("2D Drift")
 plt.xlabel("x (ft)")
 plt.ylabel("y (ft)")
-plt.figure(2)
-plt.plot(time, res[:, 2])
-plt.title("Drift Velocity")
-plt.xlabel("time (s)")
-plt.ylabel("velocity (ft/s")
-plt.figure(3)
-plt.plot(time, res[:, 3])
-plt.title("Descent Velocity")
-plt.xlabel("time (s)")
-plt.ylabel("velocity (ft/s")
-
-g = 32.17405  # ft/s^2
-rho = 0.0023769  # slug/ft^3
-vel = velocity(diam, cd_para, rho, mass, g)
-print("Test velocity: {} ft/s\nAnalytical Velocity: {} ft/s".format(res[-1, 3], -vel))
+# plt.figure(2)
+# plt.plot(time, res[:, 2])
+# plt.title("Drift Velocity")
+# plt.xlabel("time (s)")
+# plt.ylabel("velocity (ft/s")
+# plt.figure(3)
+# plt.plot(time, res[:, 3])
+# plt.title("Descent Velocity")
+# plt.xlabel("time (s)")
+# plt.ylabel("velocity (ft/s")
+#
+# g = 32.17405  # ft/s^2
+# rho = 0.0023769  # slug/ft^3
+# vel = velocity(diam, cd_para, rho, mass, g)
+print("Stable velocity drogue: {} ft/s".format(res_d[-1, 3]))
+print("Stable velocity main: {} ft/s".format(res_m[-1, 3]))
