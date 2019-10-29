@@ -32,7 +32,7 @@ v_wind = 10.0  # ft/s
 sa = area(diam)
 equ_pay = descent_equ(mass, sa, cd_para, v_wind)
 
-dt = 0.01
+dt = 0.5
 t_f = 0.0
 y = np.array([0., 4000.0, 0., 0.0])
 breakd = lambda state: state[1] > 700
