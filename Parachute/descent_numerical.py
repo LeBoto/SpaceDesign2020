@@ -10,10 +10,9 @@ from kinetic_energy import kinetic_energy
 mass = 1.61621
 diam = 3.0  # ft
 cd_para = 0.75
-cd_drift = 0.45
 v_wind = 15.0  # ft/s
 sa = area(diam)
-equ_drogue = descent_equ(mass, sa, cd_para, cd_drift, v_wind)
+equ_drogue = descent_equ(mass, sa, cd_para, v_wind)
 
 # sim setup Main
 mass = 1.61621 - 0.217567
@@ -22,7 +21,7 @@ cd_para = 2.59
 cd_drift = 0.45
 v_wind = 10.0  # ft/s
 sa = area(diam)
-equ_main = descent_equ(mass, sa, cd_para, cd_drift, v_wind)
+equ_main = descent_equ(mass, sa, cd_para, v_wind)
 
 # sim setup Payload
 mass = 0.217567
@@ -31,7 +30,7 @@ cd_para = 1.00
 cd_drift = 0.45
 v_wind = 10.0  # ft/s
 sa = area(diam)
-equ_pay = descent_equ(mass, sa, cd_para, cd_drift, v_wind)
+equ_pay = descent_equ(mass, sa, cd_para, v_wind)
 
 dt = 0.01
 t_f = 0.0

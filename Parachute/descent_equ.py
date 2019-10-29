@@ -1,20 +1,25 @@
 import sympy as sy
 
 
-def descent_equ(mass, area, c_d_fall, c_d_drift, v_w):
+def descent_equ(mass, area, c_d_fall, v_w):
     r_x, r_y, v_x, v_y = sy.symbols("r_x, r_y, v_x, v_y")
     v_wind = v_w
+    # wind frame
+    v_w = sy.sqrt((v_x - v_wind)**2 + v_y**2)
+    tht_w = sy.atan2((v_x + v_wind), v_y)
+
     g = 32.17405  # ft/s^2
     m = mass  # slugs
     rho = 0.0023769  # slug/ft^3
     A_top = area  # ft^2
-    c_D = c_d_fall
-    c_d = c_d_drift
+    c_d = c_d_fall
 
     d_r_x = v_x
     d_r_y = v_y
-    d_v_x = c_d * 0.5 * rho * (A_top / 2.0) * (v_wind ** 2 - v_x ** 2)
-    d_v_y = 0.5 * rho * A_top * c_D * v_y ** 2 - m * g
+
+    d_v_drag = c_d * 0.5 * rho * (A_top / 2.0) * v_w**2
+    d_v_x = d_v_drag*sy.sin(tht_w)
+    d_v_y = d_v_drag*sy.cos(tht_w) - m * g
 
     var = [r_x, r_y, v_x, v_y]
     equs = sy.Matrix([d_r_x, d_r_y, d_v_x, d_v_y])
