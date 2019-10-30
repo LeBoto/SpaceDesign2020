@@ -6,33 +6,34 @@ from descent_time import descent_time
 from to_terminal import to_terminal
 ################################### Vehicle Data ###################################
 # C_D
-c_d_drogue = .75  # coefficient of drag for drogue
+c_d_drogue = 0.75  # coefficient of drag for drogue
 c_d_main = np.array([1.89, 1.26, 2.59, 2.92])  # drag coefficient for main chute
 c_d_pay = 1.75  # drag coefficient for parachute payload
 
 # Masses
 m_rocket = lb2slug(30.5)  # mass of rocket body (slug)
-m_drone = 2.7
+m_drone = lb2slug(2.7)
 m_can = lb2slug(8.7 - m_drone)  # mass of payload section (slug)
 m_nose = lb2slug(2)  # mass of nose cone (slug)
 m_pay = m_can + m_nose
 
 # Dimensions
-diam_drogue = 3.0  # diameter of drogue chute (ft)
+diam_drogue = 24.0/12.0  # diameter of drogue chute (ft)
 diam_pay = np.array([36.0, 42.0, 50.0, 58.0])/12.0  # diameter of parachute payload (ft)
 
 area_drogue = np.pi * (diam_drogue / 2.0) ** 2  # area of drogue in ft
-area_main = np.array([39.3, 57.0, 89.0, 129.0])*0.9  # Main chute area (ft**2)
+# area_drogue = 6.3  # area of drogue in ft
+area_main = np.array([39.3, 57.0, 89.0, 129.0])  # Main chute area (ft**2)
 area_pay = np.pi*(diam_pay/2.0)**2  # area of the payload chute (ft**2)
 # ---------------------------------- Environmental Constants ----------------------------------
 # Local constants
 g = 32.17405  # gravity ft/s**2
 rho = 0.0023769  # air density slug/ft**3
 # Wind
-v_wind = np.arange(2.0, 20.0, 2.0) * 1.46667  # wind speed in ft/s
+v_wind = np.arange(5.0, 25.0, 5.0) * 1.46667  # wind speed in ft/s
 # ---------------------------------- Launch Phase Parameters ----------------------------------
 h_apo = 4000.0  # Beginning of descent (ft)
-h_main = 700.0  # main chute deployment altitude (ft)
+h_main = 500.0  # main chute deployment altitude (ft)
 h_payload = 600.0  # payload deployment altitude (ft)
 h_drone = 400.0  # altitude of drone deployment (ft)
 # ---------------------------------- Kinetic Energy ----------------------------------
@@ -45,6 +46,8 @@ ke_drogue = kinetic_energy(v_drogue, m_rocket)
 ke_main = kinetic_energy(v_main, m_rocket)
 ke_nose = kinetic_energy(v_pay, m_nose)
 ke_can = kinetic_energy(v_pay, m_can)
+ke_nose_el = kinetic_energy(v_pay_w_drone, m_nose)
+ke_can_el = kinetic_energy(v_pay_w_drone, m_can)
 
 print("Area drogue chute: {0:.5f} ft^2".format(area_drogue))
 print("Area main chute: {} ft^2".format(area_main))
@@ -64,17 +67,24 @@ print("KE nose cone: {} ft lbs".format(ke_nose))
 print()
 # ---------------------------------- Descent Time ----------------------------------
 # t2t_drogue = to_terminal(0.0, v_drogue, c_d_drogue, m_rocket, area_drogue, rho, g)
+# t2t_main = to_terminal(v_drogue, v_main[2], c_d_drogue, m_rocket, area_drogue[2], rho, g)
+# t2t_drogue = to_terminal(0.0, v_drogue, c_d_drogue, m_rocket, area_drogue, rho, g)
+# t2t_drogue = to_terminal(0.0, v_drogue, c_d_drogue, m_rocket, area_drogue, rho, g)
+
 t_drogue = descent_time(h_apo - h_main, v_drogue)
 t_main = descent_time(h_main, v_main)
 t_pay_w_drone = descent_time(h_main - h_drone, v_pay_w_drone)
 t_pay = descent_time(h_drone, v_pay)
+t_emergency = descent_time(h_main, v_pay_w_drone)
 # rocket descent time
 t_rocket = t_drogue + t_main
 t_payload = t_drogue + t_pay_w_drone + t_pay
+t_payload_el = t_drogue + t_pay_w_drone + t_pay
 print("Drogue descent time: {0:.5f} s".format(t_drogue))
 print("Total rocket descent time: {} s".format(t_rocket))
 print("Total payload descent time: {} s".format(t_payload))
+print("Total payload emergency descent time: {} s".format(t_payload_el))
 print()
 # ---------------------------------- Drift ----------------------------------
-max_drift_rocket = np.asarray(np.asmatrix(t_rocket).T*np.asmatrix(v_wind))
-max_drift_payload = np.asarray(np.asmatrix(t_payload).T*np.asmatrix(v_wind))
+max_drift_rocket = np.asarray(np.asmatrix(v_wind).T*np.asmatrix(t_rocket))
+max_drift_payload = np.asarray(np.asmatrix(v_wind).T*np.asmatrix(t_payload))
