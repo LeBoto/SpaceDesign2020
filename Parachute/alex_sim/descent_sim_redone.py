@@ -3,7 +3,7 @@ from lb2slug import lb2slug
 from velocity import velocity
 from kinetic_energy import kinetic_energy
 from descent_time import descent_time
-from to_terminal import to_terminal
+
 ################################### Vehicle Data ###################################
 # C_D
 c_d_drogue = 0.75  # coefficient of drag for drogue
@@ -49,25 +49,7 @@ ke_drogue = kinetic_energy(v_drogue, m_rocket)
 ke_main = kinetic_energy(v_main, m_rocket)
 ke_nose = kinetic_energy(v_pay, m_nose)
 ke_can = kinetic_energy(v_pay, m_can)
-ke_nose_el = kinetic_energy(v_pay_w_drone, m_nose)
 ke_can_el = kinetic_energy(v_pay_w_drone, m_can)
-
-print("Area drogue chute: {0:.5f} ft^2".format(area_drogue))
-print("Area main chute: {} ft^2".format(area_main))
-print("Area payload chute: {} ft^2".format(area_pay))
-print()
-print("Mass of rocket: {0:.5f} slugs".format(m_rocket))
-print("Mass of canister: {0:.5f} slugs".format(m_can))
-print("Mass of nose cone: {0:.5f} slugs".format(m_nose))
-print()
-print("Velocity drogue chute: {0:.5f} ft/s".format(v_drogue))
-print("Velocity main chute: {} ft/s".format(v_main))
-print("Velocity payload chute: {} ft/s".format(v_pay))
-print()
-print("KE rocket: {} ft lbs".format(ke_main))
-print("KE canister: {} ft lbs".format(ke_can))
-print("KE nose cone: {} ft lbs".format(ke_nose))
-print()
 # ---------------------------------- Descent Time ----------------------------------
 # Phase 1
 t_pay_free = descent_time(h_apo - h_payload, v_pay_free)
@@ -83,11 +65,31 @@ t_rocket = t_drogue + t_main
 # Payload descent time
 t_payload = t_pay_free + t_pay_w_drone + t_pay
 t_payload_el = t_pay_free + t_emergency
+# ---------------------------------- Drift ----------------------------------
+max_drift_rocket = np.asarray(np.asmatrix(v_wind).T*np.asmatrix(t_rocket))
+max_drift_payload = np.asarray(np.asmatrix(v_wind).T*np.asmatrix(t_payload))
+
+print("Area drogue chute: {0:.5f} ft^2".format(area_drogue))
+print("Area main chute: {} ft^2".format(area_main))
+print("Area payload chute: {} ft^2".format(area_pay))
+print()
+print("Mass of rocket: {0:.5f} slugs".format(m_rocket))
+print("Mass of canister: {0:.5f} slugs".format(m_can))
+print("Mass of nose cone: {0:.5f} slugs".format(m_nose))
+print()
+print("Velocity drogue chute: {0:.5f} ft/s".format(v_drogue))
+print("Velocity main chute: {} ft/s".format(v_main))
+print("Velocity payload chute: {} ft/s".format(v_pay))
+print("Velocity payload chute with UAV: {} ft/s".format(v_pay_w_drone))
+print()
+print("KE rocket: {} ft lbs".format(ke_main))
+print("KE canister: {} ft lbs".format(ke_can))
+print("KE canister with UAV: {} ft lbs".format(ke_can_el))
+print("KE nose cone: {} ft lbs".format(ke_nose))
+print()
 print("Drogue descent time: {0:.5f} s".format(t_drogue))
+print("Payload freefall time: {0:.5f} s".format(t_pay_free))
 print("Total rocket descent time: {} s".format(t_rocket))
 print("Total payload descent time: {} s".format(t_payload))
 print("Total payload emergency descent time: {} s".format(t_payload_el))
 print()
-# ---------------------------------- Drift ----------------------------------
-max_drift_rocket = np.asarray(np.asmatrix(v_wind).T*np.asmatrix(t_rocket))
-max_drift_payload = np.asarray(np.asmatrix(v_wind).T*np.asmatrix(t_payload))
