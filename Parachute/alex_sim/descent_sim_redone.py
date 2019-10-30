@@ -36,7 +36,7 @@ v_wind = np.arange(5.0, 25.0, 5.0) * 1.46667  # wind speed in ft/s
 # ---------------------------------- Launch Phase Parameters ----------------------------------
 h_apo = 4000.0  # Beginning of descent (ft)
 h_main = 500.0  # main chute deployment altitude (ft)
-h_payload = 420.0  # payload deployment altitude (ft)
+h_payload = 600.0  # payload deployment altitude (ft)
 h_drone = 400.0  # altitude of drone deployment (ft)
 # ---------------------------------- Kinetic Energy ----------------------------------
 v_drogue = velocity(c_d_drogue, m_rocket, area_drogue, rho, g)
@@ -69,25 +69,20 @@ print("KE canister: {} ft lbs".format(ke_can))
 print("KE nose cone: {} ft lbs".format(ke_nose))
 print()
 # ---------------------------------- Descent Time ----------------------------------
-# t2t_drogue = to_terminal(0.0, v_drogue, c_d_drogue, m_rocket, area_drogue, rho, g)
-# t2t_main = to_terminal(v_drogue, v_main[2], c_d_drogue, m_rocket, area_drogue[2], rho, g)
-# t2t_drogue = to_terminal(0.0, v_drogue, c_d_drogue, m_rocket, area_drogue, rho, g)
-# t2t_drogue = to_terminal(0.0, v_drogue, c_d_drogue, m_rocket, area_drogue, rho, g)
-
 # Phase 1
 t_pay_free = descent_time(h_apo - h_payload, v_pay_free)
 t_drogue = descent_time(h_apo - h_main, v_drogue)
 # Phase 2 rocket
 t_main = descent_time(h_main, v_main)
 # Phase 2 payload
-t_pay_w_drone = descent_time(h_main - h_drone, v_pay_w_drone)
+t_pay_w_drone = descent_time(h_payload - h_drone, v_pay_w_drone)
 t_pay = descent_time(h_drone, v_pay)
-t_emergency = descent_time(h_main, v_pay_w_drone)
+t_emergency = descent_time(h_payload, v_pay_w_drone)
 # rocket descent time
 t_rocket = t_drogue + t_main
 # Payload descent time
 t_payload = t_pay_free + t_pay_w_drone + t_pay
-t_payload_el = t_pay_free + t_pay_w_drone + t_pay
+t_payload_el = t_pay_free + t_emergency
 print("Drogue descent time: {0:.5f} s".format(t_drogue))
 print("Total rocket descent time: {} s".format(t_rocket))
 print("Total payload descent time: {} s".format(t_payload))
