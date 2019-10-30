@@ -4,7 +4,6 @@
 # October 29, 2019
 import numpy as np
 from lb2slug import lb2slug
-
 # TODO: change to calculations into imperial
 ################################### Vehicle Data ###################################
 # C_D
@@ -40,8 +39,9 @@ area_drogue = np.pi * (diam_drogue / 2.0) ** 2  # area of drogue in ft
 # p_r_lv = (p_d_lv / 2.0)  # radius of parachute launch vehicle (ft)
 area_main = np.array([39.3, 57.0, 89.0, 129.0])  # Main chute area (ft**2)
 
-p_d_pay = np.arange(.5, 5, .5)  # diameter of parachute payload (ft)
-p_r_p = (p_d_pay * 2)  # radius of parachute payload (ft)
+diam_pay = np.array([36.0, 42.0, 50.0, 58.0])/12.0  # diameter of parachute payload (ft)
+area_pay = np.pi*(diam_pay/2.0)**2  # area of the payload chute (ft**2)
+# p_r_p = (p_d_pay * 2)  # radius of parachute payload (ft)
 
 # Forces
 i_m = 5015  # motor impulse in N*s
@@ -51,7 +51,7 @@ thrust = 1119  # motor thrust in N
 # g = 9.8  # gravity m/s**2
 g = 32.17405  # gravity ft/s**2
 # rho = 1.22  # air density kg/m**3
-rho = 0.0765  # air density lb/ft**3
+# rho = 0.0765  # air density lb/ft**3
 rho = 0.0023769  # air density slug/ft**3
 # Wind
 w0 = 0.0 * 1.46667  # wind speed in ft/s
@@ -83,27 +83,29 @@ d_a_p = deploy_a_p * 0.3048  # pay altitude for main chute deploy in m
 # y_max_ft = y_max * 3.28084 # max altitude in feet
 # ---------------------------------- Drogue Descent Calculations -----------------------------------
 v_d_drogue = np.sqrt((2 * m_rocket * g) / (area_drogue * rho * c_d_drogue))  # descent velocity in (ft/s)
-drag_drogue = c_d_drogue * .5 * rho * area_drogue * v_d_drogue ** 2  # drag force of drogue (lbs)
-a_drogue = drag_drogue / m_rocket  # drag acceleration in m/s
-t_drogue = np.sqrt((2 * (y_max - deploy_a)) / g)  # time for rocket to fall before main chute deploy in s
+# drag_drogue = c_d_drogue * .5 * rho * area_drogue * v_d_drogue ** 2  # drag force of drogue (lbs)
+# a_drogue = drag_drogue / m_rocket  # drag acceleration in m/s
+# t_drogue = np.sqrt((2 * (y_max - deploy_a)) / g)  # time for rocket to fall before main chute deploy in s
+t_drogue = (y_max - deploy_a) / v_d_drogue
 # ---------------------------------- Rocket Descent -----------------------------------
 v_d_lv = np.sqrt((2 * m_rocket * g) / (rho * c_d_p_lv * area_main))  # descent velocity Rocket (ft/s)
 k_e_lv = .5 * m_rocket * v_d_lv ** 2  # kinetic energy of rocket  (ft*lbs)
 # d_f = c_d_p_lv * rho * v_d_lv ** 2 * np.pi * p_r_lv ** 2 * 2  # drag force in N
 w = m_rocket * g  # weight of rocket in lbm
-t_vel_lv = v_d_lv * g  # time to reach terminal velocity with parachute (s)
+# t_vel_lv = v_d_lv * g  # time to reach terminal velocity with parachute (s)
 t_vel_lv = deploy_a / v_d_lv
 # d_t_vel_lv = .5 * g * t_vel_lv ** 2  # distance travel during acceleration to terminal (ft)
 # d_final_lv = deploy_a - d_t_vel_lv  # final distance to descend at terminal velocity (ft)
 # t_main_lv = d_final_lv * v_d_lv  # time for final descent stage in sec
 # t_total_lv = t_drogue + t_main_lv  # total time for launch vehicle to descend in s
 t_main = t_drogue + t_vel_lv
-v_d_p = np.sqrt((2 * (m_pay) * g) * (np.pi * rho * c_d_p_pay * p_r_p ** 2))  # descent velocity in m/s payload
-k_e_p = .5 * (m_pay) * v_d_p ** 2  # kinetic energy of rocket at landing in J payload
+# ---------------------------------- Payload Descent -----------------------------------
+v_d_p = np.sqrt((2 * m_pay * g) * (np.pi * rho * c_d_p_pay * p_r_p ** 2))  # descent velocity in m/s payload
+k_e_p = .5 * m_pay * v_d_p ** 2  # kinetic energy of rocket at landing in J payload
 
 a_d_p = np.pi * .05 ** 2  # pay area of drogue in m
 c_d_drogue_p = .75  # pay coefficient of drag for drogue
-v_d_drogue_p = np.sqrt((2.0 * (m_pay) * g) / (a_d_p * rho * c_d_drogue_p))  # pay descent velocity in m/s
+v_d_drogue_p = np.sqrt((2.0 * m_pay * g) / (a_d_p * rho * c_d_drogue_p))  # pay descent velocity in m/s
 d_drogue_p = .75 * .5 * rho * a_d_p * v_d_drogue_p ** 2  # pay drag force of drogue
 a_drogue_p = d_drogue_p / (m_c - m_pay)  # pay drag acceleration in m/s
 t_drogue_p = np.sqrt((2 * (y_max - d_a_p)) / g)  # pay time for rocket to fall before main chute deploy in s
@@ -115,13 +117,13 @@ t_main_p = d_final_p * v_d_p  # time for final descent stage in payload sec
 t_total_p = t_main_p + t_drogue_p  # total time for payload to descend in s
 
 ################################### Drift Distance ###################################
-d0_lv = t_total_lv * w0  # drift in ft
-d5_lv = t_total_lv * w5  # drift in ft
-d10_lv = t_total_lv * w10  # drift in ft
-d15_lv = t_total_lv * w15  # drift in ft
-d20_lv = t_total_lv * w20  # drift in ft
-d0_p = t_total_p * w0  # drift in ft
-d5_p = t_total_p * w5  # drift in ft
-d10_p = t_total_p * w10  # drift in ft
-d15_p = t_total_p * w15  # drift in ft
-d20_p = t_total_p * w20  # drift in ft
+# d0_lv = t_total_lv * w0  # drift in ft
+# d5_lv = t_total_lv * w5  # drift in ft
+# d10_lv = t_total_lv * w10  # drift in ft
+# d15_lv = t_total_lv * w15  # drift in ft
+# d20_lv = t_total_lv * w20  # drift in ft
+# d0_p = t_total_p * w0  # drift in ft
+# d5_p = t_total_p * w5  # drift in ft
+# d10_p = t_total_p * w10  # drift in ft
+# d15_p = t_total_p * w15  # drift in ft
+# d20_p = t_total_p * w20  # drift in ft
