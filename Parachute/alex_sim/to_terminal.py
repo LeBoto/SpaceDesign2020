@@ -15,8 +15,10 @@ def to_terminal(v, v_term, c_d, m, area, rho, g, dt=0.005):
     x = 0.0
     v = -abs(v)
     state = np.array([x, v])
-    while (abs(v) + abs(v_term))**2 > 0.1:
-        print("error: {}".format((abs(v) + abs(v_term))**2))
+    while (abs(v) - abs(v_term)) > 15.0:
+        print("v1: {}".format(v))
+        print(v_term)
+        # print("error: {}".format((abs(v) - abs(v_term))**2))
         t += dt
         state = rk4(state, equ, dt)
         x = state[0]

@@ -3,6 +3,7 @@ from lb2slug import lb2slug
 from velocity import velocity
 from kinetic_energy import kinetic_energy
 from descent_time import descent_time
+from to_terminal import to_terminal
 
 ################################### Vehicle Data ###################################
 # C_D
@@ -19,7 +20,7 @@ m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
 m_pay = m_can + m_nose
 
 # Dimensions
-diam_drogue = 24.0/12.0  # diameter of drogue chute (ft)
+diam_drogue = np.array([14.0, 18.0, 24.0, 36.0])/12.0  # diameter of drogue chute (ft)
 diam_pay = np.array([36.0, 42.0, 50.0, 58.0])/12.0  # diameter of parachute payload (ft)
 diam_can = 7.5/12.0  # diameter of canister (ft)
 
@@ -51,17 +52,20 @@ ke_nose = kinetic_energy(v_pay, m_nose)
 ke_can = kinetic_energy(v_pay, m_can)
 ke_can_el = kinetic_energy(v_pay_w_drone, m_can)
 # ---------------------------------- Descent Time ----------------------------------
-# Phase 1
+# t2t = to_terminal(0, v_drogue[2], 0.75, m_rocket, area_drogue[2], rho, g)
+# # Phase 1
+# t2t_drogue = to_terminal(0, v_drogue[2], 0.75, m_rocket, area_drogue[2], rho, g)
 t_pay_free = descent_time(h_apo - h_payload, v_pay_free)
 t_drogue = descent_time(h_apo - h_main, v_drogue)
 # Phase 2 rocket
+# t2t_main = to_terminal(v_drogue[2], v_main[2], 0.75, m_rocket, area_main[2], rho, g)
 t_main = descent_time(h_main, v_main)
 # Phase 2 payload
 t_pay_w_drone = descent_time(h_payload - h_drone, v_pay_w_drone)
 t_pay = descent_time(h_drone, v_pay)
 t_emergency = descent_time(h_payload, v_pay_w_drone)
 # rocket descent time
-t_rocket = t_drogue + t_main
+t_rocket = t_drogue[2] + t_main
 # Payload descent time
 t_payload = t_pay_free + t_pay_w_drone + t_pay
 t_payload_el = t_pay_free + t_emergency
@@ -69,7 +73,7 @@ t_payload_el = t_pay_free + t_emergency
 max_drift_rocket = np.asarray(np.asmatrix(v_wind).T*np.asmatrix(t_rocket))
 max_drift_payload = np.asarray(np.asmatrix(v_wind).T*np.asmatrix(t_payload))
 
-print("Area drogue chute: {0:.5f} ft^2".format(area_drogue))
+print("Area drogue chute: {} ft^2".format(area_drogue))
 print("Area main chute: {} ft^2".format(area_main))
 print("Area payload chute: {} ft^2".format(area_pay))
 print()
@@ -77,7 +81,8 @@ print("Mass of rocket: {0:.5f} slugs".format(m_rocket))
 print("Mass of canister: {0:.5f} slugs".format(m_can))
 print("Mass of nose cone: {0:.5f} slugs".format(m_nose))
 print()
-print("Velocity drogue chute: {0:.5f} ft/s".format(v_drogue))
+print("Velocity drogue chute: {} ft/s".format(v_drogue))
+print("Velocity payload free fall: {0:.5f} ft/s".format(v_pay_free))
 print("Velocity main chute: {} ft/s".format(v_main))
 print("Velocity payload chute: {} ft/s".format(v_pay))
 print("Velocity payload chute with UAV: {} ft/s".format(v_pay_w_drone))
@@ -87,8 +92,8 @@ print("KE canister: {} ft lbs".format(ke_can))
 print("KE canister with UAV: {} ft lbs".format(ke_can_el))
 print("KE nose cone: {} ft lbs".format(ke_nose))
 print()
-print("Drogue descent time: {0:.5f} s".format(t_drogue))
-print("Payload freefall time: {0:.5f} s".format(t_pay_free))
+print("Drogue descent time: {} s".format(t_drogue))
+print("Payload free fall time: {} s".format(t_pay_free))
 print("Total rocket descent time: {} s".format(t_rocket))
 print("Total payload descent time: {} s".format(t_payload))
 print("Total payload emergency descent time: {} s".format(t_payload_el))
