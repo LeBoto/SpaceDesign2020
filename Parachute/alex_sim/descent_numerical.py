@@ -6,7 +6,8 @@ from descent_equ import descent_equ
 from tools import area
 from kinetic_energy import kinetic_energy
 from tools import lb2slug
-
+# Wind
+v_wind = np.arange(5.0, 25.0, 5.0) * 1.46667  # wind speed in ft/s
 # sim setup drogue
 m_rocket = lb2slug(30.5)  # slugs
 diam = 24.0/12.0  # ft
@@ -17,28 +18,32 @@ equ_drogue = descent_equ(m_rocket, sa, cd_para)
 
 # sim setup Main
 m_rocket = lb2slug(30.5)
+cd_para = 1.89
 # cd_para = 2.59
-cd_para = 2.92
+# cd_para = 2.92
+sa = 39.0
 # sa = 89.0
-sa = 129.0
+# sa = 129.0
 equ_main = descent_equ(m_rocket, sa, cd_para)
 
 # sim setup Payload free fall
 m_drone = lb2slug(1.57)
 m_nose = lb2slug(1.875)  # mass of nose cone (slug)
 m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
-m_pay = m_can + m_nose
+m_pay = m_can + m_nose + m_drone
 diam = 7.5/12.0
 cd_para = 0.47
 sa = area(diam)
 equ_free = descent_equ(m_pay, sa, cd_para)
 
+
+diam_pay = 50.0
 # sim setup Payload with drone
 m_drone = lb2slug(1.57)
 m_nose = lb2slug(1.875)  # mass of nose cone (slug)
 m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
-m_pay = m_can + m_nose
-diam = 50.0/12.0
+m_pay = m_can + m_nose + m_drone
+diam = diam_pay/12.0
 cd_para = 1.75
 sa = area(diam)
 equ_pay = descent_equ(m_pay, sa, cd_para)
@@ -46,8 +51,8 @@ equ_pay = descent_equ(m_pay, sa, cd_para)
 # sim setup Payload without drone
 m_nose = lb2slug(1.875)  # mass of nose cone (slug)
 m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
-m_pay = m_can + m_nose - m_drone
-diam = 50.0/12.0
+m_pay = m_can + m_nose
+diam = diam_pay/12.0
 cd_para = 1.75
 sa = area(diam)
 equ_drone = descent_equ(m_pay, sa, cd_para)
@@ -75,7 +80,7 @@ rocket_time = np.append(time00, time01, axis=0)
 y = np.array([h_apo, 0.0])
 res_f, time10 = sim(y, dt, equ_free, break_payload)
 y = res_f[-1, :]
-res_p, time11 = sim(y, dt, equ_main, break_drone)
+res_p, time11 = sim(y, dt, equ_pay, break_drone)
 y = res_p[-1, :]
 res_dr, time12 = sim(y, dt, equ_drone, break_gnd)
 time11 += time10[-1]
@@ -88,13 +93,13 @@ payload_time = np.append(payload_time, time12, axis=0)
 y = np.array([h_apo, 0.0])
 res_f_e, time20 = sim(y, dt, equ_free, break_payload)
 y = res_f_e[-1, :]
-res_p_e, time21 = sim(y, dt, equ_main, break_gnd)
+res_p_e, time21 = sim(y, dt, equ_pay, break_gnd)
 time21 += time20[-1]
 payload_e_sim = np.append(res_f_e, res_p_e, axis=0)
 payload_e_time = np.append(time20, time21, axis=0)
 # ------------------------- plot simulation -------------------------
 plt.figure(1)
-plt.title("Descent Position vs Time")
+plt.title("Descent Altitude vs Time")
 plt.plot(rocket_time, rocket_sim[:, 0], label="Rocket")
 plt.plot(payload_time, payload_sim[:, 0], label="Payload config 1")
 plt.plot(payload_e_time, payload_e_sim[:, 0], label="Payload config 2")
@@ -128,3 +133,6 @@ print("Descent Time of Vehicle:  \t\t{0:.2f} s".format(rocket_time[-1]))
 print("Descent Time Under Main:  \t\t{0:.2f} s".format(time01[-1] - time00[-1]))
 print("Descent Time of Payload: \t\t{0:.2f} s".format(payload_time[-1]))
 print("Descent Time of Payload + Drone:{0:.2f} s".format(payload_e_time[-1]))
+
+print("Rocket Drift: {}".format(rocket_time[-1]*v_wind))
+print("Payload Drift: {}".format(payload_time[-1]*v_wind))
