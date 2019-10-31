@@ -11,8 +11,8 @@ def descent_equ(mass, area, c_d_fall):
 
     d_r_y = v_y
 
-    d_v_drag = (c_d * 0.5 * rho * (A_top / 2.0) * v_y**2)/mass
-    d_v_y = d_v_drag - m * g
+    d_v_drag = (c_d * 0.5 * rho * A_top * v_y**2)/mass
+    d_v_y = d_v_drag - g
 
     var = [r_y, v_y]
     equs = sy.Matrix([d_r_y, d_v_y])

@@ -8,22 +8,20 @@ from kinetic_energy import kinetic_energy
 from tools import lb2slug
 # Wind
 v_wind = np.arange(5.0, 25.0, 5.0) * 1.46667  # wind speed in ft/s
+
 # sim setup drogue
 m_rocket = lb2slug(30.5)  # slugs
 diam = 24.0/12.0  # ft
-# cd_para = 1.75
 cd_para = 0.75
 sa = area(diam)
 equ_drogue = descent_equ(m_rocket, sa, cd_para)
 
 # sim setup Main
 m_rocket = lb2slug(30.5)
-cd_para = 1.89
+# cd_para = 1.89
 # cd_para = 2.59
-# cd_para = 2.92
-sa = 39.0
-# sa = 89.0
-# sa = 129.0
+cd_para = 2.92
+sa = 59.5
 equ_main = descent_equ(m_rocket, sa, cd_para)
 
 # sim setup Payload free fall
@@ -118,7 +116,7 @@ plt.xlabel("Time (s)")
 plt.ylabel("Velocity (ft/s)")
 plt.legend()
 
-print("Kinetic Energy of Vehicle on Touchdown: \t\t\t{0:.2f} ft lbs".format(kinetic_energy(rocket_sim[-1, 1], m_rocket)))
+print("Kinetic Energy of Vehicle on Touchdown: \t\t\t{0:.2f} ft lbs".format(kinetic_energy(rocket_sim[-1, 1], m_rocket-lb2slug(0.0))))
 print("Kinetic Energy of Canister with Drone on Touchdown: {0:.2f} ft lbs".format(kinetic_energy(payload_e_sim[-1, 1], m_can + m_drone)))
 print("Kinetic Energy of Canister on Touchdown: \t\t\t{0:.2f} ft lbs".format(kinetic_energy(payload_sim[-1, 1], m_can)))
 print("Kinetic Energy of Nosecone on Touchdown: \t\t\t{0:.2f} ft lbs".format(kinetic_energy(payload_sim[-1, 1], m_nose)))
@@ -132,7 +130,7 @@ print()
 print("Descent Time of Vehicle:  \t\t{0:.2f} s".format(rocket_time[-1]))
 print("Descent Time Under Main:  \t\t{0:.2f} s".format(time01[-1] - time00[-1]))
 print("Descent Time of Payload: \t\t{0:.2f} s".format(payload_time[-1]))
-print("Descent Time of Payload + Drone:{0:.2f} s".format(payload_e_time[-1]))
-
+print("Descent Time of Payload+Drone: {0:.2f} s".format(payload_e_time[-1]))
+print()
 print("Rocket Drift: {}".format(rocket_time[-1]*v_wind))
 print("Payload Drift: {}".format(payload_time[-1]*v_wind))
