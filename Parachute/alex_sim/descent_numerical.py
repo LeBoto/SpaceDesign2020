@@ -10,15 +10,16 @@ from tools import lb2slug
 # sim setup drogue
 m_rocket = lb2slug(30.5)  # slugs
 diam = 24.0/12.0  # ft
+# cd_para = 1.75
 cd_para = 0.75
 sa = area(diam)
 equ_drogue = descent_equ(m_rocket, sa, cd_para)
 
 # sim setup Main
 m_rocket = lb2slug(30.5)
-cd_para = 2.59
+# cd_para = 2.59
 cd_para = 2.92
-sa = 89.0
+# sa = 89.0
 sa = 129.0
 equ_main = descent_equ(m_rocket, sa, cd_para)
 
@@ -124,5 +125,6 @@ print("Max Velocity of Payload + Drone under parachute:{0:.2f} ft/s".format(abs(
 print("Max Velocity of Payload under parachute: \t\t{0:.2f} ft/s".format(abs(payload_sim[-1, 1])))
 print()
 print("Descent Time of Vehicle:  \t\t{0:.2f} s".format(rocket_time[-1]))
+print("Descent Time Under Main:  \t\t{0:.2f} s".format(time01[-1] - time00[-1]))
 print("Descent Time of Payload: \t\t{0:.2f} s".format(payload_time[-1]))
 print("Descent Time of Payload + Drone:{0:.2f} s".format(payload_e_time[-1]))
