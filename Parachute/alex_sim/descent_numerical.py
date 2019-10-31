@@ -1,27 +1,31 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from velocity import velocity
 from sim import sim
 from descent_equ import descent_equ
-from tools import area
 from kinetic_energy import kinetic_energy
-from tools import lb2slug
+from tools import lb2slug, area, area_eff
+
 # Wind
-v_wind = np.arange(5.0, 25.0, 5.0) * 1.46667  # wind speed in ft/s
+v_wind = np.arange(0.0, 25.0, 5.0) * 1.46667  # wind speed in ft/s
+g = 32.17405
+rho = 0.0023769
 
 # sim setup drogue
-m_rocket = lb2slug(30.5)  # slugs
+m_rocket = lb2slug(32.5)  # slugs
 diam = 24.0/12.0  # ft
-cd_para = 0.75
+cd_dro = 0.75
 sa = area(diam)
-equ_drogue = descent_equ(m_rocket, sa, cd_para)
+equ_drogue = descent_equ(m_rocket, sa, cd_dro)
 
 # sim setup Main
-m_rocket = lb2slug(30.5)
-# cd_para = 1.89
+# cd_para = .97
+# sa = area_eff(17.0, lb2slug(44.0), cd_para, rho, g)
+# cd_para = .97
+# sa = area_eff(17.0, lb2slug(60), cd_para, rho, g)
 # cd_para = 2.59
+# sa = area_eff(17.0, lb2slug(32.6), cd_para, rho, g)
 cd_para = 2.92
-sa = 59.5
+sa = area_eff(17.0, lb2slug(60.0), cd_para, rho, g)
 equ_main = descent_equ(m_rocket, sa, cd_para)
 
 # sim setup Payload free fall
@@ -30,30 +34,28 @@ m_nose = lb2slug(1.875)  # mass of nose cone (slug)
 m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
 m_pay = m_can + m_nose + m_drone
 diam = 7.5/12.0
-cd_para = 0.47
+cd_can = 0.47
 sa = area(diam)
-equ_free = descent_equ(m_pay, sa, cd_para)
+equ_free = descent_equ(m_pay, sa, cd_can)
 
-
-diam_pay = 50.0
+diam_pay = 58.0
 # sim setup Payload with drone
 m_drone = lb2slug(1.57)
 m_nose = lb2slug(1.875)  # mass of nose cone (slug)
 m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
 m_pay = m_can + m_nose + m_drone
 diam = diam_pay/12.0
-cd_para = 1.75
+cd_pay = 1.75
 sa = area(diam)
-equ_pay = descent_equ(m_pay, sa, cd_para)
+equ_pay = descent_equ(m_pay, sa, cd_pay)
 
 # sim setup Payload without drone
 m_nose = lb2slug(1.875)  # mass of nose cone (slug)
 m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
 m_pay = m_can + m_nose
 diam = diam_pay/12.0
-cd_para = 1.75
 sa = area(diam)
-equ_drone = descent_equ(m_pay, sa, cd_para)
+equ_drone = descent_equ(m_pay, sa, cd_pay)
 dt = 0.01
 t_f = 0.0
 
@@ -74,6 +76,7 @@ res_m, time01 = sim(y, dt, equ_main, break_gnd)
 rocket_sim = np.append(res_d, res_m, axis=0)
 time01 += time00[-1]
 rocket_time = np.append(time00, time01, axis=0)
+
 # ------------------------- simulation of payload normal -------------------------
 y = np.array([h_apo, 0.0])
 res_f, time10 = sim(y, dt, equ_free, break_payload)
@@ -87,6 +90,7 @@ payload_sim = np.append(res_f, res_p, axis=0)
 payload_sim = np.append(payload_sim, res_dr, axis=0)
 payload_time = np.append(time10, time11, axis=0)
 payload_time = np.append(payload_time, time12, axis=0)
+
 # ------------------------- simulation of payload emergency -------------------------
 y = np.array([h_apo, 0.0])
 res_f_e, time20 = sim(y, dt, equ_free, break_payload)
@@ -95,6 +99,7 @@ res_p_e, time21 = sim(y, dt, equ_pay, break_gnd)
 time21 += time20[-1]
 payload_e_sim = np.append(res_f_e, res_p_e, axis=0)
 payload_e_time = np.append(time20, time21, axis=0)
+
 # ------------------------- plot simulation -------------------------
 plt.figure(1)
 plt.title("Descent Altitude vs Time")
@@ -116,7 +121,7 @@ plt.xlabel("Time (s)")
 plt.ylabel("Velocity (ft/s)")
 plt.legend()
 
-print("Kinetic Energy of Vehicle on Touchdown: \t\t\t{0:.2f} ft lbs".format(kinetic_energy(rocket_sim[-1, 1], m_rocket-lb2slug(0.0))))
+print("Kinetic Energy of Vehicle on Touchdown: \t\t\t{0:.2f} ft lbs".format(kinetic_energy(rocket_sim[-1, 1], m_rocket-lb2slug(4.0))))
 print("Kinetic Energy of Canister with Drone on Touchdown: {0:.2f} ft lbs".format(kinetic_energy(payload_e_sim[-1, 1], m_can + m_drone)))
 print("Kinetic Energy of Canister on Touchdown: \t\t\t{0:.2f} ft lbs".format(kinetic_energy(payload_sim[-1, 1], m_can)))
 print("Kinetic Energy of Nosecone on Touchdown: \t\t\t{0:.2f} ft lbs".format(kinetic_energy(payload_sim[-1, 1], m_nose)))
@@ -127,8 +132,8 @@ print("Max Velocity of Payload: \t\t\t\t\t\t{0:.2f} ft/s".format(abs(res_f[-1, 1
 print("Max Velocity of Payload + Drone under parachute:{0:.2f} ft/s".format(abs(payload_e_sim[-1, 1])))
 print("Max Velocity of Payload under parachute: \t\t{0:.2f} ft/s".format(abs(payload_sim[-1, 1])))
 print()
-print("Descent Time of Vehicle:  \t\t{0:.2f} s".format(rocket_time[-1]))
-print("Descent Time Under Main:  \t\t{0:.2f} s".format(time01[-1] - time00[-1]))
+print("Descent Time of Vehicle: \t\t{0:.2f} s".format(rocket_time[-1]))
+print("Descent Time Under Main: \t\t{0:.2f} s".format(time01[-1] - time00[-1]))
 print("Descent Time of Payload: \t\t{0:.2f} s".format(payload_time[-1]))
 print("Descent Time of Payload+Drone: {0:.2f} s".format(payload_e_time[-1]))
 print()
