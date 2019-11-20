@@ -37,11 +37,11 @@ cd = 1.75
 pay = chute.parachute(cd, None)
 pay.circular_area(diam, update=True)
 
-drogue = {"24": drg24,
-          "36": drg36}
+drogue_chutes = {"24": drg24,
+                 "36": drg36}
 
-main = {"certXL": certXL,
-        "certXXL": certXXL}
+main_chutes = {"certXL": certXL,
+               "certXXL": certXXL}
 
-payload = {"main": pay,
-           "freefall": pay_free}
+payload_chutes = {"main": pay,
+                  "freefall": pay_free}
