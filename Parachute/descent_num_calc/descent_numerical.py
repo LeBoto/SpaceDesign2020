@@ -5,8 +5,8 @@ from descent_equ import descent_equ
 from kinetic_energy import kinetic_energy
 from tools import lb2slug, area, area_eff
 
-# Wind
-v_wind = np.arange(0.0, 25.0, 5.0) * 1.46667  # wind speed in ft/s
+# # Wind
+# v_wind = np.arange(0.0, 25.0, 5.0) * 1.46667  # wind speed in ft/s
 g = 32.17405
 rho = 0.0023769
 
