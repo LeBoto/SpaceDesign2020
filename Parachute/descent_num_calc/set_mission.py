@@ -43,13 +43,17 @@ class Mission(object):
         print("Time of descent: {0:.2f}".format(self.tf))
         try:
             over_time = min(np.where(self.time > self.time_lim)[0])
-            print("Altitude where max time is Exceeded: {0:.2f}".format(self.path[over_time, self.__as]))
+            print("*********************************************")
+            print("Altitude where max time is exceeded: {0:.2f}".format(self.path[over_time, self.__as]))
+            print("*********************************************")
         except ValueError:
             pass
         print()
         print("Kinetic Energy on touchdown: {0:.2f} ft lbs".format(self.ke))
         if self.ke > self.ke_lim:
+            print("*********************************************")
             print("Kinetic energy Exceeded by: {0:.2f} ft lbs".format(self.ke - self.ke_lim))
+            print("*********************************************")
         else:
             print("Kinetic energy margin: {0:.2f} ft lbs".format(self.ke_lim - self.ke))
         return

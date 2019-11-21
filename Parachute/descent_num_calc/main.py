@@ -3,7 +3,7 @@ from tools import toslugs, tofeet
 from set_mission import Mission
 import numpy as np
 
-drg = drogue_chutes['36']
+drg = drogue_chutes['24']
 main = main_chutes['certXXL']
 pay = payload_chutes['main']
 fall = payload_chutes['freefall']
@@ -17,7 +17,7 @@ initial_state = np.array([4000.0, 0.0])
 phases = 2
 
 # phase 1
-m_1 = toslugs(32.5)
+m_1 = toslugs(30.5)
 chute1 = drg
 dt1 = 0.01
 bc1 = 500.0
