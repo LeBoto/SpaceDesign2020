@@ -16,10 +16,10 @@ max_time = 90.0  # sec
 initial_state = np.array([4000.0, 0.0])
 phases = 2
 # set up mission parameters
-dt = [0.01, 0.01]
-mass = [toslugs(32.5), toslugs(32.5 - 4.0)]
-bc = [500.0, 0.0]
-chutes = [drogue, main]
+dt = [0.01, 0.01]  # time step for each phase
+mass = [toslugs(31.8), toslugs(31.8 - 4.0)]  # mass for each phase
+bc = [500.0, 0.0]  # altitude breaking conditions
+chutes = [drogue, main]  # parachute used for each phase
 
 rocket = Mission(phases, initial_state, dt, bc, mass, chutes, max_time, max_ke)
 pos, time = rocket.run_mission()
