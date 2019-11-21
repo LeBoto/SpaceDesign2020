@@ -22,6 +22,7 @@ class Mission(object):
         self.time = None
         self.ke = None
         self.tf = None
+        self.yf = None
 
     def run_mission(self):
         y = self.state
@@ -36,6 +37,7 @@ class Mission(object):
         self.path = state
         self.time = time
         self.tf = time[-1]
+        self.yf = self.path[-1, :]
         self.ke = self.kinetic_energy(self.path[-1, self.__vs], self.mass[-1])
         return state, time
 
@@ -44,7 +46,7 @@ class Mission(object):
         try:
             over_time = min(np.where(self.time > self.time_lim)[0])
             print("*********************************************")
-            print("Altitude where max time is exceeded: {0:.2f}".format(self.path[over_time, self.__as]))
+            print("Altitude where max time is exceeded: {0:.2f} ft".format(self.path[over_time, self.__as]))
             print("*********************************************")
         except ValueError:
             pass
