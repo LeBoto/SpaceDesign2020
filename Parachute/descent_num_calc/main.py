@@ -1,6 +1,6 @@
 from mission_chutes import drogue_chutes, main_chutes, payload_chutes
 from tools import toslugs, tofeet
-from set_mission import mission
+from set_mission import Mission
 import numpy as np
 
 drg = drogue_chutes['36']
@@ -34,5 +34,6 @@ mass = [m_1, m_2]
 bc = [bc1, bc2]
 chutes = [chute1, chute2]
 
-rocket = mission(phases, initial_state, dt, bc, mass, chutes, max_time, max_ke)
+rocket = Mission(phases, initial_state, dt, bc, mass, chutes, max_time, max_ke)
 pos, time = rocket.run_mission()
+rocket.results()
