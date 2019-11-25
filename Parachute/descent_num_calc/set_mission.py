@@ -67,7 +67,8 @@ class Mission(object):
         print()
         return
 
-    def make_equ(self, mass, area, c_d):
+    @staticmethod
+    def make_equ(mass, area, c_d):
         r_y, v_y = sy.symbols("r_y, v_y")
         g = 32.17405
         rho = 0.0023769
