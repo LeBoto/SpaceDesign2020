@@ -9,7 +9,7 @@ main = main_chutes['certXL']
 pay = payload_chutes['main']
 fall = payload_chutes['freefall']
 
-# mission contraints
+# mission constraints
 max_ke = 75.0  # ft lbs
 max_time = 90.0  # sec
 
