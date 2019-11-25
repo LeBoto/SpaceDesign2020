@@ -53,3 +53,5 @@ plt.figure(2)
 rocket.plot_vel("Rocket Velocity")
 payload.plot_vel("Payload Velocity")
 plt.legend()
+
+del dt, bc, chutes, mass, m_nose, m_can, m_drone, m_pay, m_pay_empty, phases, initial_state
