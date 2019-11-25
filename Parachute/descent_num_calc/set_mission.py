@@ -1,6 +1,6 @@
 import sympy as sy
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 class Mission(object):
     def __init__(self, n_phases, initial_state, time_step, break_alt, masses, chutes, max_time, max_ke):
@@ -41,7 +41,8 @@ class Mission(object):
         self.ke = self.kinetic_energy(self.path[-1, self.__vs], self.mass[-1])
         return state, time
 
-    def results(self):
+    def results(self, name=""):
+        print("--------------------{0:s}--------------------".format(str(name)))
         print("Time of descent: {0:.2f}".format(self.tf))
         try:
             over_time = min(np.where(self.time > self.time_lim)[0])
@@ -90,6 +91,20 @@ class Mission(object):
         s = self.__as
         return y[s] > bc
 
+    def plot_path(self, label=""):
+        x = self.time
+        y = self.path[:, 0]
+        plt.plot(x, y, label=label)
+        plt.scatter(self.tf, 0, c="BLUE")
+        plt.scatter(self.time_lim, 0, label="Time limit", c="RED")
+
+    def plot_vel(self, label=""):
+        x = self.time
+        y = -self.path[:, 1]
+        plt.plot(x, y, label=label)
+        plt.scatter(self.tf, -self.yf[1], c="BLUE")
+        plt.scatter(self.tf, self.ke2vel(self.ke_lim, self.mass[-1]), label="Velocity limit", c="RED")
+
     @staticmethod
     def rk4(yn, f, h):
         shp = yn.shape
@@ -106,3 +121,7 @@ class Mission(object):
     @staticmethod
     def kinetic_energy(v, m):
         return 0.5 * m * v ** 2
+
+    @staticmethod
+    def ke2vel(ke, m):
+        return np.sqrt(ke*2.0/m)
