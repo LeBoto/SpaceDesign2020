@@ -41,24 +41,30 @@ class Mission(object):
         self.ke = self.kinetic_energy(self.path[-1, self.__vs], self.mass[-1])
         return state, time
 
-    def results(self, name=""):
-        print("--------------------{0:s}--------------------".format(str(name)))
+    def results(self, name="", **kwargs):
+        print("-------------------- {0:s} --------------------".format(str(name)))
         print("Time of descent: {0:.2f}".format(self.tf))
         try:
             over_time = min(np.where(self.time > self.time_lim)[0])
-            print("*********************************************")
-            print("Altitude where max time is exceeded: {0:.2f} ft".format(self.path[over_time, self.__as]))
-            print("*********************************************")
+            print("*** Altitude where max time is exceeded: {0:.2f} ft ***".format(self.path[over_time, self.__as]))
         except ValueError:
             pass
-        print()
-        print("Kinetic Energy on touchdown: {0:.2f} ft lbs".format(self.ke))
-        if self.ke > self.ke_lim:
-            print("*********************************************")
-            print("Kinetic energy Exceeded by: {0:.2f} ft lbs".format(self.ke - self.ke_lim))
-            print("*********************************************")
+        print("Velocity of final descent: {0:.2f} ft/s".format(abs(self.yf[1])))
+        if 'masses' in kwargs:
+            i = 0
+            for m in kwargs["masses"]:
+                i += 1
+                ke = self.kinetic_energy(self.yf[1], m)
+                print("Kinetic Energy section {0} on touchdown: {1:.2f} ft lbs".format(i, ke))
+                if ke > self.ke_lim:
+                    print("*** Kinetic energy section {0} Exceeded by: {1:.2f} ft lbs ***".format(i, ke - self.ke_lim))
         else:
-            print("Kinetic energy margin: {0:.2f} ft lbs".format(self.ke_lim - self.ke))
+            print("Kinetic Energy on touchdown: {0:.2f} ft lbs".format(self.ke))
+            if self.ke > self.ke_lim:
+                print("*********************************************")
+                print("Kinetic energy Exceeded by: {0:.2f} ft lbs".format(self.ke - self.ke_lim))
+                print("*********************************************")
+        print()
         return
 
     def make_equ(self, mass, area, c_d):
@@ -94,16 +100,22 @@ class Mission(object):
     def plot_path(self, label=""):
         x = self.time
         y = self.path[:, 0]
+        plt.scatter(self.time_lim, 0, label="Time limit")
+        plt.scatter(self.tf, 0, c="BLACK", marker="x")
         plt.plot(x, y, label=label)
-        plt.scatter(self.tf, 0, c="BLUE")
-        plt.scatter(self.time_lim, 0, label="Time limit", c="RED")
+        plt.title("Altitude Plot")
+        plt.xlabel("Time (sec)")
+        plt.ylabel("Altitude (ft)")
 
     def plot_vel(self, label=""):
         x = self.time
         y = -self.path[:, 1]
+        plt.scatter(self.tf, self.ke2vel(self.ke_lim, self.mass[-1]), label="Velocity limit")
+        plt.scatter(self.tf, -self.yf[1], c="BLACK", marker="x")
         plt.plot(x, y, label=label)
-        plt.scatter(self.tf, -self.yf[1], c="BLUE")
-        plt.scatter(self.tf, self.ke2vel(self.ke_lim, self.mass[-1]), label="Velocity limit", c="RED")
+        plt.title("Velocity Plot")
+        plt.xlabel("Time (sec)")
+        plt.ylabel("Velocity (ft/s)")
 
     @staticmethod
     def rk4(yn, f, h):
