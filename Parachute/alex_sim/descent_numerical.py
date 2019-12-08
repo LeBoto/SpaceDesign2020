@@ -11,9 +11,9 @@ g = 32.17405
 rho = 0.0023769
 
 # sim setup drogue
-m_rocket = lb2slug(32.5)  # slugs
-# diam = 24.0/12.0  # ft
-diam = 36.0/12.0  # ft
+m_rocket = lb2slug(31.8)  # slugs
+diam = 24.0/12.0  # ft
+# diam = 36.0/12.0  # ft
 cd_dro = 0.75
 sa = area(diam)
 equ_drogue = descent_equ(m_rocket, sa, cd_dro)
@@ -23,11 +23,11 @@ equ_drogue = descent_equ(m_rocket, sa, cd_dro)
 # sa = area_eff(17.0, lb2slug(44.0), cd_para, rho, g)
 # cd_para = .97
 # sa = area_eff(17.0, lb2slug(60), cd_para, rho, g)
-cd_para = 2.59
-sa = area_eff(17.0, lb2slug(32.6), cd_para, rho, g)
-# cd_para = 2.92
-# sa = area_eff(17.0, lb2slug(60.0), cd_para, rho, g)
-equ_main = descent_equ(m_rocket, sa, cd_para)
+# cd_para = 2.59
+# sa = area_eff(17.0, lb2slug(32.6), cd_para, rho, g)
+cd_para = 2.92
+sa = area_eff(17.0, lb2slug(60.0), cd_para, rho, g)
+equ_main = descent_equ(m_rocket - lb2slug(4.0), sa, cd_para)
 
 # sim setup Payload free fall
 m_drone = lb2slug(1.57)
@@ -36,8 +36,8 @@ m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
 m_pay = m_can + m_nose + m_drone
 diam = 7.5/12.0
 cd_can = 0.47
-sa = area(diam)
-equ_free = descent_equ(m_pay, sa, cd_can)
+sa_1 = area(diam)
+equ_free = descent_equ(m_pay, sa_1, cd_can)
 
 diam_pay = 58.0
 # sim setup Payload with drone
@@ -47,16 +47,16 @@ m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
 m_pay = m_can + m_nose + m_drone
 diam = diam_pay/12.0
 cd_pay = 1.75
-sa = area(diam)
-equ_pay = descent_equ(m_pay, sa, cd_pay)
+sa_2 = area(diam)
+equ_pay = descent_equ(m_pay, sa_2, cd_pay)
 
 # sim setup Payload without drone
 m_nose = lb2slug(1.875)  # mass of nose cone (slug)
 m_can = lb2slug(7.67 - m_nose)  # mass of payload section (slug)
 m_pay = m_can + m_nose
 diam = diam_pay/12.0
-sa = area(diam)
-equ_drone = descent_equ(m_pay, sa, cd_pay)
+sa_3 = area(diam)
+equ_drone = descent_equ(m_pay, sa_3, cd_pay)
 dt = 0.01
 t_f = 0.0
 
@@ -122,7 +122,7 @@ plt.xlabel("Time (s)")
 plt.ylabel("Velocity (ft/s)")
 plt.legend()
 
-print("Kinetic Energy of Vehicle on Touchdown: {0:.2f} ft lbs".format(kinetic_energy(rocket_sim[-1, 1], m_rocket-lb2slug(4.0))))
+print("Kinetic Energy of Vehicle on Touchdown: {0:.2f} ft lbs".format(kinetic_energy(rocket_sim[-1, 1], m_rocket - lb2slug(4.0))))
 print("Kinetic Energy of Canister with Drone on Touchdown: {0:.2f} ft lbs".format(kinetic_energy(payload_e_sim[-1, 1], m_can + m_drone)))
 print("Kinetic Energy of Canister on Touchdown: {0:.2f} ft lbs".format(kinetic_energy(payload_sim[-1, 1], m_can)))
 print("Kinetic Energy of Nosecone on Touchdown: {0:.2f} ft lbs".format(kinetic_energy(payload_sim[-1, 1], m_nose)))
