@@ -13,6 +13,6 @@ try:
 except:
     print('Please check the port')
 
-"""Receiving data and storing it in a list"""
+"""Receiving data and storing it"""
 data = str(arduino.readline())
 parsed_data = data.split(',')
