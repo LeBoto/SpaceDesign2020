@@ -16,3 +16,5 @@ except:
 """Receiving data and storing it"""
 data = str(arduino.readline())
 parsed_data = data.split(',')
+parsed_data[0] = parsed_data[0].split('$', 1)[1]
+parsed_data[-1] = parsed_data[-1].split('*', 1)[0]
