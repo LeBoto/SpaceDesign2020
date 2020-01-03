@@ -9,7 +9,7 @@ Created on Thu Aug 17 13:25:46 2017
 import serial
 """Opening of the serial port"""
 try:
-    arduino = serial.Serial("COM13", timeout=1)
+    arduino = serial.Serial("COM7", timeout=1)
 except:
     print('Please check the port')
 
