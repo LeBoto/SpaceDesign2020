@@ -18,6 +18,7 @@ namespace missionControl1
         bool fix;
         bool save_flag = false;
         bool init_flag = true;
+        bool bread_or_butter;
         int file = 0;
         string csv = "manual_save";
         string manual_path;
@@ -67,6 +68,9 @@ namespace missionControl1
             parsed = parse_string(indata);
             update_text(parsed);
             sp.DiscardInBuffer();
+            sp.DiscardInBuffer();
+            sp.DiscardInBuffer();
+            sp.DiscardInBuffer();
         }
 
         private string[] parse_string(string input_data)
@@ -83,7 +87,11 @@ namespace missionControl1
             double lon = 0.0;
 
             if (dat_delim.Length <= 1) return; // Checking for data
-            if (dat_delim[0] != "BREAD") return; // Check that the rigth data is being sent
+
+            if (dat_delim[0] == "BREAD") bread_or_butter = true; // Check that the rigth data is being sent
+            else if (dat_delim[0] == "BUTTR") bread_or_butter = false;
+            else return;
+
             if (dat_delim[4] == "") fix = false; // if the latitude string is empty there is no fix
             else fix = true;
 
@@ -102,9 +110,18 @@ namespace missionControl1
             {
                 this.Invoke((MethodInvoker)delegate
                 {
-                    tb_lat.Text = lat.ToString();
-                    tb_lon.Text = lon.ToString();
-                    btn_fix.Checked = fix;
+                    if (bread_or_butter)
+                    {
+                        tb_lat_bd.Text = lat.ToString();
+                        tb_lon_bd.Text = lon.ToString();
+                        btn_fix_bd.Checked = fix;
+                    }
+                    else if (!bread_or_butter)
+                    {
+                        tb_lat_bt.Text = lat.ToString();
+                        tb_lon_bt.Text = lon.ToString();
+                        btn_fix_bt.Checked = fix;
+                    }
                     if (fix) map.Position = new PointLatLng(lat, lon);
                 });
             }
