@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Mission(object):
-    def __init__(self, n_phases, initial_state, time_step, break_alt, masses, chutes, max_time, max_ke):
+    def __init__(self, mission):
+        n_phases, initial_state, time_step, break_alt, masses, chutes, max_time, max_ke = mission
         assert n_phases == len(break_alt) == len(masses)
         self.__as = 0
         self.__vs = 1
